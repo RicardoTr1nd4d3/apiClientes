@@ -29,8 +29,7 @@ public class ClienteRepository {
 	public void update(Cliente cliente) throws Exception {
 		var connection = ConnectionFactory.getConnection();
 
-		var statement = connection
-				.prepareStatement("UPDATE clientes SET nome=?, cpf=?, telefone=?, email=? WHERE id=?");
+		var statement = connection.prepareStatement("UPDATE clientes SET nome=?, cpf=?, telefone=?, email=? WHERE id=?");
 		statement.setString(1, cliente.getNome());
 		statement.setString(2, cliente.getCpf());
 		statement.setString(3, cliente.getTelefone());
@@ -104,4 +103,33 @@ public class ClienteRepository {
 
 		return cliente;
 	}
+	
+	public boolean isExists(String cpf, UUID id) throws Exception {
+		
+		var connection = ConnectionFactory.getConnection();
+		
+		var statement = connection.prepareStatement("SELECT COUNT(cpf) AS qtd FROM clientes WHERE cpf = ? AND id <> ?");
+		statement.setString(1, cpf);
+		statement.setString(2, id.toString());
+		var resultSet = statement.executeQuery();
+		
+		var result = false;
+		if(resultSet.next()) {
+			var qtd = resultSet.getInt("qtd");
+			result = qtd == 1;
+		}
+		
+		connection.close();
+		
+		return result;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
